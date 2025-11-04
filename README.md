@@ -1,7 +1,8 @@
 ```markdown
 # 🎧 Podcast-Plattform (2025)
 
-Willkommen zur **Podcast-Plattform** – einem selbst gehosteten System zum **Verwalten, Hochladen und Hören von Podcasts** mit automatischer **RSS-Feed-Erstellung**.
+Willkommen zur **Podcast-Plattform** – einem selbst gehosteten System zum **Verwalten,
+Hochladen und Hören von Podcasts** mit automatischer **RSS-Feed-Erstellung**.
 
 ---
 
