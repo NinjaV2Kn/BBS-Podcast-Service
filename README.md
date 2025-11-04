@@ -1,4 +1,3 @@
-```markdown
 # 🎧 Podcast-Plattform (2025)
 
 Willkommen zur **Podcast-Plattform** – einem selbst gehosteten System zum **Verwalten,
@@ -91,7 +90,7 @@ MinIO (Pi)
 2. Docker installieren  
    ```bash
    sudo apt update && sudo apt install docker docker-compose -y
-````
+   ```
 
 3. In `docker-compose.yml`:
 
@@ -234,9 +233,3 @@ MIT License © 2025 – Podcast-Plattform-Team
 > * Vollständiges Aufgaben-Backlog: [BACKLOG.md](./BACKLOG.md)
 > * Entwicklerleitfaden: [TEAM_GUIDE.md](./TEAM_GUIDE.md)
 
-```
-
----
-
-Möchtest du, dass ich dir das als **`README.md`-Datei** speichere (neben deinem `BACKLOG.md`) und dir den Download-Link gebe?
-```
