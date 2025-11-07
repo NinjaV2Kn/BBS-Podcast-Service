@@ -1,0 +1,181 @@
+{
+  "info": {
+    "name": "Podcast Platform API",
+    "description": "API test collection for Podcast Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"securepassword\",\n  \"name\": \"Test User\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/auth/signup",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["auth", "signup"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"securepassword\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Uploads",
+      "item": [
+        {
+          "name": "Get Presigned URL",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"filename\": \"episode-001.mp3\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/uploads/presign",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["uploads", "presign"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Episodes",
+      "item": [
+        {
+          "name": "Create Episode",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Episode 1: Getting Started\",\n  \"description\": \"Introduction to our podcast\",\n  \"audioUrl\": \"podcasts/episode-001.mp3\",\n  \"podcastId\": \"{{podcastId}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/episodes",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["episodes"]
+            }
+          }
+        },
+        {
+          "name": "Get Episodes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/episodes",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["episodes"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Overview",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8080/api/dashboard/overview",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["api", "dashboard", "overview"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "RSS Feed",
+      "item": [
+        {
+          "name": "Get Feed",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/feeds/{{slug}}.xml",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["feeds", "{{slug}}.xml"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
