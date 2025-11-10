@@ -11,8 +11,9 @@ export default function Layout() {
           <div className="flex justify-between h-16">
             <div className="flex space-x-8">
               <Link to="/" className="flex items-center text-xl font-bold text-gray-900">
-                🎧 Podcast Platform
-              </Link>
+              <img src="src/img/Layout/RSS-Cast-Logo.png" alt="Logo" className="h-12 w-12 mr-2 rounded-full" />
+              RSS-Cast
+            </Link>
               {isAuthenticated && (
                 <>
                   <Link to="/dashboard" className="inline-flex items-center px-1 pt-1 text-gray-700 hover:text-gray-900">
