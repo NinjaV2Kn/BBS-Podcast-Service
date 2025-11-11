@@ -1,18 +1,19 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
+    setLoading(true);
 
-    // TODO: Implement signup API call
     try {
       const response = await fetch('http://localhost:8080/auth/signup', {
         method: 'POST',
@@ -20,13 +21,21 @@ export default function Signup() {
         body: JSON.stringify({ email, password, name }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        navigate('/login');
+        // Auto-login after signup
+        localStorage.setItem('token', data.token);
+        setSuccess(`✅ Welcome ${data.name}! Redirecting...`);
+        // Reload page to refresh auth state properly
+        setTimeout(() => window.location.href = '/', 1500);
       } else {
-        setError('Signup failed. Please try again.');
+        setError(data.error || 'Signup failed. Please try again.');
       }
     } catch (err) {
       setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -40,6 +49,12 @@ export default function Signup() {
         </div>
       )}
 
+      {success && (
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
+          {success}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">
@@ -50,6 +65,7 @@ export default function Signup() {
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            disabled={loading}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
         </div>
@@ -63,6 +79,7 @@ export default function Signup() {
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
@@ -77,6 +94,7 @@ export default function Signup() {
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
@@ -84,11 +102,19 @@ export default function Signup() {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+          disabled={loading}
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Sign Up
+          {loading ? '⏳ Signing up...' : 'Sign Up'}
         </button>
       </form>
+
+      <p className="mt-4 text-center text-sm text-gray-600">
+        Already have an account?{' '}
+        <a href="/login" className="text-blue-600 hover:text-blue-700 font-medium">
+          Log in
+        </a>
+      </p>
     </div>
   );
 }

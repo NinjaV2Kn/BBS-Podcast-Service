@@ -1,20 +1,31 @@
 import { Request, Response, NextFunction } from 'express';
+import * as jwt from 'jsonwebtoken';
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: { id: string; email: string };
+    }
+  }
+}
 
 // JWT authentication middleware
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const token = req.headers.authorization?.replace('Bearer ', '');
-    
+     
     if (!token) {
       return res.status(401).json({ error: 'No token provided' });
     }
 
-    // TODO: Verify JWT token
-    // const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    // req.user = decoded;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
+      id: string;
+      email: string;
+    };
+    req.user = decoded;
     
-    next();
+    return next();
   } catch (error) {
-    res.status(401).json({ error: 'Invalid token' });
+    return res.status(401).json({ error: 'Invalid token' });
   }
 };

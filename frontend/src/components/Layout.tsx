@@ -1,8 +1,14 @@
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/auth';
 
 export default function Layout() {
   const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -28,7 +34,7 @@ export default function Layout() {
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
                 <button
-                  onClick={logout}
+                  onClick={handleLogout}
                   className="text-gray-700 hover:text-gray-900"
                 >
                   Logout

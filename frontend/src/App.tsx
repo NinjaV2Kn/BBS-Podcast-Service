@@ -8,14 +8,17 @@ import Dashboard from './pages/Dashboard';
 import EpisodeDetail from './pages/EpisodeDetail';
 import FeedPreview from './pages/FeedPreview';
 import PrivateRoute from './components/PrivateRoute';
+import PublicRoute from './components/PublicRoute';
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
-        <Route path="login" element={<Login />} />
-        <Route path="signup" element={<Signup />} />
+        
+        {/* Public auth routes - redirect to dashboard if already logged in */}
+        <Route path="login" element={<PublicRoute><Login /></PublicRoute>} />
+        <Route path="signup" element={<PublicRoute><Signup /></PublicRoute>} />
         
         {/* Protected routes */}
         <Route path="upload" element={<PrivateRoute><Upload /></PrivateRoute>} />
