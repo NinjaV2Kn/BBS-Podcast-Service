@@ -6,13 +6,16 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY prisma/ ./prisma/
 
-# Install dependencies
+# Install all dependencies
 RUN npm ci
 
 # Copy source code
 COPY src/ ./src/
-COPY prisma/ ./prisma/
+
+# Generate Prisma client
+RUN npm run prisma:generate
 
 # Build TypeScript
 RUN npm run build
@@ -22,18 +25,34 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init curl
+
 # Copy package files
 COPY package*.json ./
-COPY prisma/ ./prisma/
 
 # Install production dependencies only
-RUN npm ci --only=production
+RUN npm ci --only=production -- --no-fund --no-audit
 
 # Copy built application from builder
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
-# Expose port
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+USER nodejs
+
+# Health check for Docker
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8080/health || exit 1
+
 EXPOSE 8080
+
+# Use dumb-init to handle signals
+ENTRYPOINT ["dumb-init", "--"]
 
 # Start the application
 CMD ["npm", "run", "start"]
