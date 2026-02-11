@@ -299,7 +299,7 @@ export default function Dashboard() {
 
           {/* Analytics Cards */}
           <Grid container spacing={3} sx={{ mb: 6 }}>
-            <Grid item xs={12} sm={6} md={4} component="div">
+            <Grid item xs={12} sm={6} md={4}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
