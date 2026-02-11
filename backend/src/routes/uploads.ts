@@ -128,7 +128,7 @@ router.head('/file/:filename', (_req, res) => {
 });
 
 // GET /uploads/file/:filename - Serve uploaded file with proper CORS and Range support
-router.get('/file/:filename', (req, res) => {
+router.get('/file/:filename', (_req, res) => {
   try {
     // Set CORS headers FIRST, before everything else
     res.header('Access-Control-Allow-Origin', '*');
@@ -139,7 +139,7 @@ router.get('/file/:filename', (req, res) => {
     res.header('Cache-Control', 'public, max-age=3600');
     res.header('Content-Type', 'audio/mpeg');
 
-    const filename = req.params.filename;
+    const filename = _req.params.filename;
     const filepath = path.join(uploadsDir, filename);
     
     // Ensure filename doesn't try to escape the uploads directory
@@ -156,7 +156,7 @@ router.get('/file/:filename', (req, res) => {
     const fileSize = stat.size;
 
     // Handle Range requests
-    const range = req.headers.range;
+    const range = _req.headers.range;
     if (range) {
       const parts = range.replace(/bytes=/, '').split('-');
       const start = parseInt(parts[0], 10);
@@ -172,12 +172,12 @@ router.get('/file/:filename', (req, res) => {
       res.header('Content-Length', (end - start + 1).toString());
 
       const stream = fs.createReadStream(filepath, { start, end });
-      stream.pipe(res);
+      return stream.pipe(res);
     } else {
       // No range request, send full file
       res.header('Content-Length', fileSize.toString());
       const stream = fs.createReadStream(filepath);
-      stream.pipe(res);
+      return stream.pipe(res);
     }
   } catch (error) {
     console.error('Serve file error:', error);

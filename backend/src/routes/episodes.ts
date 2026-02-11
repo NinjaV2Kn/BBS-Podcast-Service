@@ -134,10 +134,10 @@ router.delete('/:id', auth, async (req, res) => {
       where: { id: req.params.id },
     });
 
-    res.json({ message: 'Episode deleted successfully' });
+    return res.json({ message: 'Episode deleted successfully' });
   } catch (error) {
     console.error('Delete episode error:', error);
-    res.status(500).json({ error: 'Failed to delete episode' });
+    return res.status(500).json({ error: 'Failed to delete episode' });
   }
 });
 

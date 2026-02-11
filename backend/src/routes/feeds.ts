@@ -10,6 +10,8 @@ const prisma = new PrismaClient();
  * @param baseUrl Base URL for the feed links
  */
 function generateRssFeed(podcast: any, episodes: any[], baseUrl: string): string {
+  const podcastUrl = `${baseUrl}/feeds/${podcast.slug}`;
+  
   // Format timestamp for RSS (RFC 2822)
   const formatRFC2822 = (date: Date) => {
     return new Date(date).toUTCString();

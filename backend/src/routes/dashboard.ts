@@ -8,9 +8,8 @@ const prisma = new PrismaClient();
 // GET /api/dashboard/overview - Get dashboard statistics for authenticated user
 router.get('/overview', auth, async (req, res) => {
   try {
+    const userId = req.user!.id;
     // Get user's podcasts
-    const podcasts = await prisma.podcast.findMany({
-      where: { userId },
       include: {
         episodes: true,
       },
@@ -82,7 +81,7 @@ router.get('/overview', auth, async (req, res) => {
     });
   } catch (error) {
     console.error('Dashboard overview error:', error);
-    res.status(500).json({ error: 'Failed to fetch dashboard data' });
+    return res.status(500).json({ error: 'Failed to fetch dashboard data' });
   }
 });
 
