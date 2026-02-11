@@ -54,7 +54,8 @@ router.put('/file/:filename', async (req, res): Promise<void> => {
     
     // Ensure filename doesn't try to escape the uploads directory
     if (!filepath.startsWith(uploadsDir)) {
-      return res.status(400).json({ error: 'Invalid filename' });
+      res.status(400).json({ error: 'Invalid filename' });
+      return;
     }
     
     // Write file from request body
@@ -83,7 +84,7 @@ router.put('/file/:filename', async (req, res): Promise<void> => {
     });
   } catch (error) {
     console.error('Upload error:', error);
-    return res.status(500).json({ error: 'Failed to upload file' });
+    res.status(500).json({ error: 'Failed to upload file' });
   }
 });
 
