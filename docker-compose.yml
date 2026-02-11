@@ -1,113 +1,157 @@
 version: '3.8'
 
 # ============================================
-# MINIMAL SETUP - Basic Podcast Platform
+# Podcast Platform - Production Ready
 # ============================================
-# Start with: docker-compose up -d
-# Uses SQLite + local storage by default
+# Quick start: docker-compose up -d
+# 
+# Configuration:
+# 1. Copy .env.example to .env
+# 2. Update variables (JWT_SECRET, POSTGRES_PASSWORD, etc.)
+# 3. Run: docker-compose up -d
 #
-# For Production with external services:
-# See DOCKER.md for PostgreSQL + MinIO setup
+# Services: Frontend (3000) + Backend (8080) + DB (5432) + Storage (9000)
 # ============================================
 
 services:
-  # Backend API (required)
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: podcast-backend
-    ports:
-      - "8080:8080"
-    environment:
-      NODE_ENV: production
-      JWT_SECRET: ${JWT_SECRET:-change-me-for-production}
-      JWT_EXPIRY: 7d
-      FRONTEND_URL: http://localhost:3000
-      # Optional: PostgreSQL
-      # DATABASE_URL: postgresql://user:password@postgres:5432/podcasts
-      # Optional: S3/MinIO
-      # S3_ENDPOINT: http://minio:9000
-      # S3_ACCESS_KEY: minioadmin
-      # S3_SECRET_KEY: change-me-for-production
-    volumes:
-      - ./backend/uploads:/app/uploads  # Local file storage
-    networks:
-      - podcast-network
-
-  # Frontend Web App (required)
+  # Frontend Web Application
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: podcast-frontend
+    restart: unless-stopped
     ports:
       - "3000:3000"
+    environment:
+      VITE_API_URL: http://backend:8080
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - podcast-network
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "com.podcast.description=Frontend Web Application"
+
+  # Backend API Server
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: podcast-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
     environment:
-      VITE_API_URL: http://localhost:8080
+      NODE_ENV: ${NODE_ENV:-production}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      JWT_EXPIRY: ${JWT_EXPIRY:-7d}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      # Database Configuration
+      DATABASE_URL: postgresql://${POSTGRES_USER:-podcast_user}:${POSTGRES_PASSWORD:-change-me-in-production}@postgres:5432/${POSTGRES_DB:-podcasts}
+      # S3/MinIO Configuration
+      S3_ENDPOINT: ${S3_ENDPOINT:-http://minio:9000}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-minioadmin}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-change-me-in-production}
+      S3_BUCKET: ${S3_BUCKET:-podcasts}
+      S3_REGION: ${S3_REGION:-us-east-1}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    volumes:
+      - ./backend/logs:/app/logs
+    networks:
+      - podcast-network
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "com.podcast.description=Backend API Server"
 
-  # ============================================
-  # OPTIONAL SERVICES (uncomment to enable)
-  # ============================================
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: podcast-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-podcast_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-in-production}
+      POSTGRES_DB: ${POSTGRES_DB:-podcasts}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - podcast-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-podcast_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    labels:
+      - "com.podcast.description=PostgreSQL Database"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
-  # PostgreSQL Database (optional)
-  # Uncomment to use PostgreSQL instead of SQLite
-  # Then set DATABASE_URL in backend service above
-  #
-  # postgres:
-  #   image: postgres:16-alpine
-  #   container_name: podcast-db
-  #   environment:
-  #     POSTGRES_USER: podcast_user
-  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-for-production}
-  #     POSTGRES_DB: podcasts
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #   ports:
-  #     - "5432:5432"
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U podcast_user"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-  #   networks:
-  #     - podcast-network
+  # MinIO S3 Storage
+  minio:
+    image: minio/minio:latest
+    container_name: podcast-minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-change-me-in-production}
+      MINIO_BROWSER: "on"
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - podcast-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "com.podcast.description=MinIO S3-Compatible Storage"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
-  # MinIO S3 Storage (optional)
-  # Uncomment to use S3 instead of local file storage
-  # Then set S3_* variables in backend service above
-  #
-  # minio:
-  #   image: minio/minio:latest
-  #   container_name: podcast-minio
-  #   environment:
-  #     MINIO_ROOT_USER: minioadmin
-  #     MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD:-change-me-for-production}
-  #   volumes:
-  #     - minio_data:/minio_data
-  #   ports:
-  #     - "9000:9000"
-  #     - "9001:9001"
-  #   command: server /minio_data --console-address ":9001"
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-  #     interval: 30s
-  #     timeout: 20s
-  #     retries: 3
-  #   networks:
-  #     - podcast-network
-
-# Volumes (only created if services are uncommented)
+# ============================================
+# Volumes for Persistent Data
+# ============================================
 volumes:
   postgres_data:
+    driver: local
   minio_data:
+    driver: local
 
-# Network
+# ============================================
+# Network for Service Communication
+# ============================================
 networks:
   podcast-network:
     driver: bridge
-

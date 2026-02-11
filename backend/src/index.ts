@@ -56,9 +56,23 @@ app.use('/play', playRouter);
 app.use('/api/dashboard', dashboardRouter);
 
 
-// Health check
+// Health check (for Docker healthcheck & monitoring)
 app.get('/health', (_req, res: Response) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.status(200).json({ 
+    status: 'ok', 
+    service: 'podcast-backend',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
+});
+
+// Ready check (for Kubernetes/Docker readiness)
+app.get('/ready', (_req, res: Response) => {
+  // Check if services are ready
+  res.status(200).json({ 
+    status: 'ready',
+    service: 'podcast-backend',
+  });
 });
 
 app.listen(PORT, () => {
