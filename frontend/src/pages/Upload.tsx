@@ -456,8 +456,7 @@ export default function Upload() {
             </Grid>
 
             {/* Audio File Upload - Drag and Drop */}
-            {/* @ts-ignore */}
-            <Grid item xs={12} component="div">
+            <Grid item xs={12}>
               <motion.div variants={itemVariants}>
                 <Box
                   onDragEnter={handleDrag}
@@ -517,8 +516,7 @@ export default function Upload() {
             </Grid>
 
             {/* Episode Details */}
-            {/* @ts-ignore */}
-            <Grid item xs={12} component="div">
+            <Grid item xs={12}>
               <motion.div variants={itemVariants}>
                 <Card
                   sx={{
@@ -556,8 +554,7 @@ export default function Upload() {
 
             {/* Error Alert */}
             {error && (
-              {/* @ts-ignore */}
-              <Grid item xs={12} component="div">
+              <Grid item xs={12}>
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -570,8 +567,7 @@ export default function Upload() {
 
             {/* Progress */}
             {uploading && uploadProgress > 0 && (
-              {/* @ts-ignore */}
-              <Grid item xs={12} component="div">
+              <Grid item xs={12}>
                 <motion.div variants={itemVariants}>
                   <Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
@@ -585,8 +581,7 @@ export default function Upload() {
             )}
 
             {/* Submit Button */}
-            {/* @ts-ignore */}
-            <Grid item xs={12} component="div">
+            <Grid item xs={12}>
               <motion.div variants={itemVariants}>
                 <Button
                   type="submit"
