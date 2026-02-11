@@ -10,7 +10,6 @@ RUN npm ci
 
 COPY frontend/src/ ./src/
 COPY frontend/index.html ./
-COPY frontend/public/ ./public/ 2>/dev/null || true
 
 RUN npm run build
 
