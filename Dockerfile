@@ -6,7 +6,7 @@ WORKDIR /app/frontend
 COPY frontend/package*.json ./
 COPY frontend/tsconfig*.json frontend/vite.config.ts frontend/postcss.config.js frontend/tailwind.config.js ./
 
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 COPY frontend/src/ ./src/
 COPY frontend/index.html ./
@@ -22,7 +22,7 @@ COPY backend/package*.json ./
 COPY backend/tsconfig.json ./
 COPY backend/prisma/ ./prisma/
 
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 COPY backend/src/ ./src/
 
