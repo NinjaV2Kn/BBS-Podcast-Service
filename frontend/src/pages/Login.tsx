@@ -1,5 +1,20 @@
 import { useState } from 'react';
 import { useAuth } from '../utils/auth';
+import { useTheme } from '../ThemeContext';
+import { motion } from 'framer-motion';
+import {
+  Box,
+  Container,
+  Card,
+  TextField,
+  Button,
+  Typography,
+  Alert,
+  Stack,
+  Link,
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Lock } from '@mui/icons-material';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -8,6 +23,8 @@ export default function Login() {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const { isDarkMode } = useTheme();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,7 +35,6 @@ export default function Login() {
     try {
       await login(email, password);
       setSuccess('✅ Login successful! Redirecting...');
-      // Reload page to refresh auth state properly
       setTimeout(() => window.location.href = '/', 1000);
     } catch (err: any) {
       setError(err.message || 'Login failed. Please check your credentials.');
@@ -28,67 +44,149 @@ export default function Login() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-12 px-4">
-      <h2 className="text-3xl font-bold text-center mb-8">Login</h2>
-      
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
-          {success}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={loading}
-            required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={loading}
-            required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+    <Box
+      sx={{
+        background: isDarkMode
+          ? 'linear-gradient(135deg, #030712 0%, #0f172a 50%, #1e293b 100%)'
+          : 'linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f0f4f8 100%)',
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        py: 4,
+      }}
+    >
+      <Container maxWidth="sm">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          {loading ? '⏳ Logging in...' : 'Login'}
-        </button>
-      </form>
+          <Card
+            sx={{
+              p: { xs: 3, md: 4 },
+              backdropFilter: 'blur(20px)',
+              border: isDarkMode
+                ? '1px solid rgba(148, 163, 184, 0.12)'
+                : '1px solid rgba(99, 102, 241, 0.1)',
+            }}
+          >
+            {/* Logo Section */}
+            <Box sx={{ textAlign: 'center', mb: 4 }}>
+              <Box
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 60,
+                  height: 60,
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #818cf8 0%, #f472b6 100%)',
+                  mb: 2,
+                }}
+              >
+                <Lock sx={{ color: '#fff', fontSize: 30 }} />
+              </Box>
+              <Typography variant="h4" sx={{ mb: 1 }}>
+                Welcome Back
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                Sign in to your RSS-Cast account
+              </Typography>
+            </Box>
 
-      <p className="mt-4 text-center text-sm text-gray-600">
-        Don't have an account?{' '}
-        <a href="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
-          Sign up
-        </a>
-      </p>
-    </div>
+            {/* Alerts */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Alert severity="error" sx={{ mb: 3 }}>
+                  {error}
+                </Alert>
+              </motion.div>
+            )}
+
+            {success && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Alert severity="success" sx={{ mb: 3 }}>
+                  {success}
+                </Alert>
+              </motion.div>
+            )}
+
+            {/* Form */}
+            <form onSubmit={handleSubmit}>
+              <Stack spacing={2.5}>
+                <TextField
+                  label="Email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                  required
+                  fullWidth
+                  size="medium"
+                />
+
+                <TextField
+                  label="Password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                  required
+                  fullWidth
+                  size="medium"
+                />
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{ width: '100%', marginTop: 12 }}
+                >
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    variant="contained"
+                    fullWidth
+                    size="large"
+                    sx={{
+                      background:
+                        'linear-gradient(135deg, #818cf8 0%, #f472b6 100%)',
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {loading ? 'Signing In...' : 'Sign In'}
+                  </Button>
+                </motion.button>
+
+                <Typography variant="body2" sx={{ textAlign: 'center', mt: 2 }}>
+                  Don't have an account?{' '}
+                  <Link
+                    onClick={() => navigate('/signup')}
+                    sx={{
+                      cursor: 'pointer',
+                      color: '#818cf8',
+                      fontWeight: 600,
+                      textDecoration: 'none',
+                      '&:hover': { textDecoration: 'underline' },
+                    }}
+                  >
+                    Sign up here
+                  </Link>
+                </Typography>
+              </Stack>
+            </form>
+          </Card>
+        </motion.div>
+      </Container>
+    </Box>
   );
 }

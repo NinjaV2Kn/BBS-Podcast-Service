@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -27,11 +27,13 @@ model Podcast {
   description String?
   slug        String    @unique  // For RSS feed URL
   coverUrl    String?
+  categoryId  String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   
   userId      String
   user        User      @relation(fields: [userId], references: [id])
+  category    Category? @relation(fields: [categoryId], references: [id])
   
   episodes    Episode[]
 }
@@ -40,7 +42,7 @@ model Episode {
   id          String    @id @default(uuid())
   title       String
   description String?
-  audioUrl    String    // MinIO URL
+  audioUrl    String    // S3 URL or local file path
   duration    Int?      // in seconds
   publishedAt DateTime  @default(now())
   createdAt   DateTime  @default(now())
@@ -63,4 +65,14 @@ model Play {
   
   @@index([episodeId])
   @@index([createdAt])
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  color     String    @default("#3b82f6")  // Tailwind blue-600
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  
+  podcasts  Podcast[]
 }

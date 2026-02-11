@@ -84,7 +84,28 @@ MinIO (Pi)
 
 ---
 
-### 🔹 Raspberry Pi Setup
+### 🔹 Option 1: Docker (Quickstart)
+
+Alles in 3 Befehlen starten - minimal Setup mit SQLite + lokal Storage:
+
+```bash
+docker-compose up -d
+```
+
+**Services verfügbar:**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8080
+
+**Optional: PostgreSQL + MinIO aktivieren**
+- Siehe [DOCKER-SIMPLE.md](./DOCKER-SIMPLE.md) für Details
+
+---
+
+### 🔹 Option 2: Lokales Development
+
+#### Raspberry Pi Setup
+
+#### Raspberry Pi Setup
 
 1. SSH auf den Pi
 2. Docker installieren  
@@ -117,9 +138,7 @@ MinIO (Pi)
    docker compose up -d
    ```
 
----
-
-### 🔹 Lokales Backend Setup
+#### Lokales Backend Setup
 
 ```bash
 cd backend

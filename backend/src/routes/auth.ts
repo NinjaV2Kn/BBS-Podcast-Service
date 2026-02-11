@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import * as argon2 from 'argon2';
 import * as jwt from 'jsonwebtoken';
@@ -52,7 +52,7 @@ router.post('/signup', async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRY || '7d' } as jwt.SignOptions
     );
 
-    res.status(201).json({
+    return res.status(201).json({
       id: user.id,
       email: user.email,
       name: user.name,
@@ -94,7 +94,7 @@ router.post('/login', async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRY || '7d' } as jwt.SignOptions
     );
 
-    res.json({
+    return res.json({
       id: user.id,
       email: user.email,
       name: user.name,
