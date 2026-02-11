@@ -69,12 +69,12 @@ router.put('/file/:filename', async (req, res) => {
       });
     });
     
-    writeStream.on('error', (error) => {
+    writeStream.on('error', (_error) => {
       return res.status(500).json({ error: 'Failed to save file' });
     });
   } catch (error) {
     console.error('Upload error:', error);
-    res.status(500).json({ error: 'Failed to upload file' });
+    return res.status(500).json({ error: 'Failed to upload file' });
   }
 });
 
@@ -91,7 +91,7 @@ router.options('/file/:filename', (req, res) => {
 });
 
 // HEAD /uploads/file/:filename - Support HEAD requests
-router.head('/file/:filename', (req, res) => {
+router.head('/file/:filename', (_req, res) => {
   try {
     const filename = req.params.filename;
     const filepath = path.join(uploadsDir, filename);
@@ -181,7 +181,7 @@ router.get('/file/:filename', (req, res) => {
     }
   } catch (error) {
     console.error('Serve file error:', error);
-    res.status(500).json({ error: 'Failed to serve file' });
+    return res.status(500).json({ error: 'Failed to serve file' });
   }
 });
 

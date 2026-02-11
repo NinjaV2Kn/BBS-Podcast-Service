@@ -95,7 +95,7 @@ router.get('/:slug.xml', async (req, res: Response) => {
     return res.send(rssFeed);
   } catch (error) {
     console.error('RSS feed generation error:', error);
-    res.status(500).send('Failed to generate RSS feed');
+    return res.status(500).send('Failed to generate RSS feed');
   }
 });
 
@@ -163,7 +163,7 @@ router.get('/all.xml', async (req, res: Response) => {
     return res.send(rss);
   } catch (error) {
     console.error('Global RSS feed generation error:', error);
-    res.status(500).send('Failed to generate RSS feed');
+    return res.status(500).send('Failed to generate RSS feed');
   }
 });
 
@@ -186,13 +186,13 @@ router.get('/:slug', async (req, res: Response) => {
       return res.status(404).json({ error: 'Podcast not found' });
     }
 
-    res.json({
+    return res.json({
       podcast,
       rssUrl: `http://localhost:8080/feeds/${slug}.xml`,
     });
   } catch (error) {
     console.error('Get feed error:', error);
-    res.status(500).json({ error: 'Failed to fetch feed' });
+    return res.status(500).json({ error: 'Failed to fetch feed' });
   }
 });
 

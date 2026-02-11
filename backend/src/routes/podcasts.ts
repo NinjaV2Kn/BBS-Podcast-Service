@@ -15,7 +15,7 @@ const CreatePodcastSchema = z.object({
 });
 
 // GET /podcasts - Fetch all podcasts (public)
-router.get('/', async (req, res) => {
+router.get('/', async (_req, res) => {
   try {
     const podcasts = await prisma.podcast.findMany({
       include: {
@@ -33,7 +33,7 @@ router.get('/', async (req, res) => {
     res.json(podcasts);
   } catch (error) {
     console.error('Get podcasts error:', error);
-    res.status(500).json({ error: 'Failed to fetch podcasts' });
+    return res.status(500).json({ error: 'Failed to fetch podcasts' });
   }
 });
 
@@ -63,13 +63,13 @@ router.post('/', auth, async (req, res) => {
       include: { category: true },
     });
 
-    res.status(201).json(podcast);
+    return res.status(201).json(podcast);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: error.errors[0].message });
     }
     console.error('Create podcast error:', error);
-    res.status(500).json({ error: 'Failed to create podcast' });
+    return res.status(500).json({ error: 'Failed to create podcast' });
   }
 });
 
@@ -90,10 +90,10 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Podcast not found' });
     }
 
-    res.json(podcast);
+    return res.json(podcast);
   } catch (error) {
     console.error('Get podcast error:', error);
-    res.status(500).json({ error: 'Failed to fetch podcast' });
+    return res.status(500).json({ error: 'Failed to fetch podcast' });
   }
 });
 
@@ -119,13 +119,13 @@ router.put('/:id', auth, async (req, res) => {
       data: body,
     });
 
-    res.json(updated);
+    return res.json(updated);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: error.errors[0].message });
     }
     console.error('Update podcast error:', error);
-    res.status(500).json({ error: 'Failed to update podcast' });
+    return res.status(500).json({ error: 'Failed to update podcast' });
   }
 });
 
@@ -154,10 +154,10 @@ router.delete('/:id', auth, async (req, res) => {
       where: { id: req.params.id },
     });
 
-    res.json({ message: 'Podcast deleted successfully', podcast: deleted });
+    return res.json({ message: 'Podcast deleted successfully', podcast: deleted });
   } catch (error) {
     console.error('Delete podcast error:', error);
-    res.status(500).json({ error: 'Failed to delete podcast' });
+    return res.status(500).json({ error: 'Failed to delete podcast' });
   }
 });
 
