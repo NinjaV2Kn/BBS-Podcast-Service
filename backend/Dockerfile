@@ -36,9 +36,15 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 
+# Create uploads directory for file uploads
+RUN mkdir -p /app/uploads && chmod 755 /app/uploads
+
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
+
+# Fix permissions for nodejs user
+RUN chown -R nodejs:nodejs /app
 
 USER nodejs
 
