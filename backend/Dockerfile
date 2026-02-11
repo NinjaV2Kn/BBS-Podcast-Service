@@ -3,18 +3,18 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
-COPY tsconfig.json ./
+# Copy package files (from backend directory, since build context is repo root)
+COPY backend/package*.json ./
+COPY backend/tsconfig.json ./
 
 # Copy prisma schema - this is required for build
-COPY prisma/ ./prisma/
+COPY backend/prisma/ ./prisma/
 
 # Install all dependencies
 RUN npm ci
 
 # Copy source code
-COPY src/ ./src/
+COPY backend/src/ ./src/
 
 # Generate Prisma client
 RUN npm run prisma:generate
@@ -30,15 +30,9 @@ WORKDIR /app
 # Install dumb-init for proper signal handling and curl for health checks
 RUN apk add --no-cache dumb-init curl
 
-# Copy package files
-COPY package*.json ./
-
-# Install production dependencies only
-RUN npm ci --only=production --no-fund --no-audit
-
-# Copy built application from builder
+# Copy built application and dependencies from builder
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 
 # Create non-root user
