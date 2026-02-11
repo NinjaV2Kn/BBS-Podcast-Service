@@ -299,6 +299,7 @@ export default function Dashboard() {
 
           {/* Analytics Cards */}
           <Grid container spacing={3} sx={{ mb: 6 }}>
+            {/* @ts-ignore */}
             <Grid item xs={12} sm={6} md={4} component="div">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
