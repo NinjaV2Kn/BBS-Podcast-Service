@@ -283,7 +283,24 @@ npm run dev
 
 ### 🔹 Option 3: Production-Deployment (Cloud/VPS)
 
-Für Deployment auf Heroku, AWS, DigitalOcean, etc.
+Für Deployment auf Heroku, AWS, DigitalOcean, Render etc.
+
+#### Render.com (Recommended für einfaches Hosting)
+
+```bash
+# 1. Git Push zu GitHub
+git push origin main
+
+# 2. Connect in Render Dashboard
+# https://dashboard.render.com/new
+
+# 3. Select "Web Service" + Connect GitHub Repo
+# 4. Set Root Directory: backend (oder frontend für Frontend)
+# 5. Environment variables setzen
+# 6. Deploy!
+```
+
+📚 **Ausführliche Anleitung:** Siehe [RENDER-DEPLOYMENT.md](./RENDER-DEPLOYMENT.md)
 
 #### Mit Docker Hub
 
@@ -490,7 +507,10 @@ Vor der Veröffentlichung abhaken:
 | Datei/Ordner    | Zweck                                           |
 | --------------- | ----------------------------------------------- |
 | `README.md`     | Projektbeschreibung & Setup (dieses Dokument)  |
+| `DEPLOYMENT-CHECKLIST.md` | Vor-Deployment-Checkliste mit allen Schritten |
 | `DOCKER-DEPLOYMENT.md` | Erweiterte Docker Deployment Guide       |
+| `RENDER-DEPLOYMENT.md` | Render.com Deployment Guide              |
+| `TROUBLESHOOTING.md` | Häufige Probleme & Lösungen                   |
 | `BACKLOG.md`    | Vollständige Aufgabenliste & Akzeptanzkriterien |
 | `TEAM_GUIDE.md` | Phasenleitfaden für Entwicklerteam              |
 | `deploy.sh`     | Automatisiertes Deployment Script (Linux/Mac)  |
@@ -554,6 +574,8 @@ MIT License © 2025 – Podcast-Plattform-Team
 
 > 📌 Weitere Infos:
 >
+> * Deployment Checklist: [DEPLOYMENT-CHECKLIST.md](./DEPLOYMENT-CHECKLIST.md) - Komplette Vor-Deployment Checkliste
 > * Vollständiges Aufgaben-Backlog: [BACKLOG.md](./BACKLOG.md)
 > * Entwicklerleitfaden: [TEAM_GUIDE.md](./TEAM_GUIDE.md)
+> * Troubleshooting: [TROUBLESHOOTING.md](./TROUBLESHOOTING.md)
 

@@ -6,6 +6,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 COPY tsconfig.json ./
+
+# Copy prisma schema - this is required for build
 COPY prisma/ ./prisma/
 
 # Install all dependencies
@@ -25,19 +27,19 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install dumb-init for proper signal handling
+# Install dumb-init for proper signal handling and curl for health checks
 RUN apk add --no-cache dumb-init curl
 
 # Copy package files
 COPY package*.json ./
 
 # Install production dependencies only
-RUN npm ci --only=production -- --no-fund --no-audit
+RUN npm ci --only=production --no-fund --no-audit
 
 # Copy built application from builder
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/prisma ./prisma
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
