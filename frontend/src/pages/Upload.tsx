@@ -612,8 +612,8 @@ export default function Upload() {
         </motion.div>
       </Box>
 
-        {/* Create New Podcast Dialog */}
-        <Dialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)} maxWidth="sm" fullWidth>
+      {/* Create New Podcast Dialog */}
+      <Dialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)} maxWidth="sm" fullWidth>
           <DialogTitle>Neuen Podcast erstellen</DialogTitle>
           <DialogContent>
             <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -653,7 +653,6 @@ export default function Upload() {
             </Button>
           </DialogActions>
         </Dialog>
-      </Box>
     </Container>
   );
 }
