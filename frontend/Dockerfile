@@ -3,17 +3,17 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
-COPY tsconfig*.json vite.config.ts postcss.config.js tailwind.config.js ./
+# Copy package files (from frontend directory, since build context is repo root)
+COPY frontend/package*.json ./
+COPY frontend/tsconfig*.json frontend/vite.config.ts frontend/postcss.config.js frontend/tailwind.config.js ./
 
 # Install dependencies
 RUN npm ci
 
 # Copy source code
-COPY src/ ./src/
-COPY index.html ./
-COPY public/ ./public/ 2>/dev/null || true
+COPY frontend/src/ ./src/
+COPY frontend/index.html ./
+COPY frontend/public/ ./public/ 2>/dev/null || true
 
 # Build the application
 RUN npm run build

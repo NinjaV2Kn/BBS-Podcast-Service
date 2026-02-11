@@ -2,6 +2,7 @@ import express, { Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import pinoHttp from 'pino-http';
+import path from 'path';
 import authRouter from './routes/auth';
 import uploadsRouter from './routes/uploads';
 import episodesRouter from './routes/episodes';
@@ -73,6 +74,26 @@ app.get('/ready', (_req, res: Response) => {
     status: 'ready',
     service: 'podcast-backend',
   });
+});
+
+// Serve frontend static files
+const publicPath = path.join(__dirname, 'public');
+app.use(express.static(publicPath, { 
+  index: false,
+  extensions: ['html', 'css', 'js', 'json', 'png', 'jpg', 'gif', 'svg', 'ico', 'webp'],
+}));
+
+// SPA fallback - all non-API requests go to index.html
+app.get('*', (req, res: Response) => {
+  // Skip API routes - they should have been handled above
+  if (req.path.startsWith('/api') || req.path.startsWith('/auth') || req.path.startsWith('/uploads') || 
+      req.path.startsWith('/episodes') || req.path.startsWith('/podcasts') || 
+      req.path.startsWith('/categories') || req.path.startsWith('/feeds') || 
+      req.path.startsWith('/play') || req.path.startsWith('/health') || 
+      req.path.startsWith('/ready')) {
+    return res.status(404).json({ error: 'Not found' });
+  }
+  res.sendFile(path.join(publicPath, 'index.html'));
 });
 
 app.listen(PORT, () => {
