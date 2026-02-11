@@ -49,7 +49,7 @@ router.post('/presign', auth, async (req, res) => {
 // PUT /uploads/file/:filename - Handle local file upload (development mode)
 router.put('/file/:filename', async (req, res) => {
   try {
-    const filename = _req.params.filename;
+    const filename = req.params.filename;
     const filepath = path.join(uploadsDir, filename);
     
     // Ensure filename doesn't try to escape the uploads directory
