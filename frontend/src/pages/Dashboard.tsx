@@ -43,7 +43,6 @@ import {
   Delete,
   PlayArrow,
   Podcasts,
-  TrendingUp,
   Radio,
 } from '@mui/icons-material';
 
@@ -300,7 +299,7 @@ export default function Dashboard() {
 
           {/* Analytics Cards */}
           <Grid container spacing={3} sx={{ mb: 6 }}>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={4} component="div">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -335,7 +334,7 @@ export default function Dashboard() {
               </motion.div>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={4} component="div">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -370,7 +369,7 @@ export default function Dashboard() {
               </motion.div>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={4} component="div">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -552,7 +551,7 @@ export default function Dashboard() {
           ) : (
             <Grid container spacing={3}>
               {podcasts.map((podcast, idx) => (
-                <Grid item xs={12} key={podcast.id}>
+                <Grid item xs={12} key={podcast.id} component="div">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}

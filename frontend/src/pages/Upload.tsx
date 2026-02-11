@@ -22,7 +22,6 @@ import {
   DialogContent,
   DialogActions,
   Chip,
-  useMediaQuery,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -52,7 +51,6 @@ const itemVariants = {
 
 export default function Upload() {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [file, setFile] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
@@ -325,27 +323,27 @@ export default function Upload() {
 
   return (
     <Container maxWidth="md">
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-        sx={{ py: 4 }}
-      >
-        <motion.div variants={itemVariants}>
-          <Box sx={{ mb: 4, pt: 3 }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-              📻 Neue Episode hochladen
-            </Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              Wähle ein Podcast aus oder erstelle einen neuen
-            </Typography>
-          </Box>
-        </motion.div>
+      <Box sx={{ py: 4 }}>
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
+          <motion.div variants={itemVariants}>
+            <Box sx={{ mb: 4, pt: 3 }}>
+              <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+                📻 Neue Episode hochladen
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                Wähle ein Podcast aus oder erstelle einen neuen
+              </Typography>
+            </Box>
+          </motion.div>
 
-        <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
             {/* Podcast Selection / Creation */}
-            <Grid item xs={12}>
+            <Grid item xs={12} component="div">
               <motion.div variants={itemVariants}>
                 <Card
                   sx={{
@@ -457,7 +455,7 @@ export default function Upload() {
             </Grid>
 
             {/* Audio File Upload - Drag and Drop */}
-            <Grid item xs={12}>
+            <Grid item xs={12} component="div">
               <motion.div variants={itemVariants}>
                 <Box
                   onDragEnter={handleDrag}
@@ -517,7 +515,7 @@ export default function Upload() {
             </Grid>
 
             {/* Episode Details */}
-            <Grid item xs={12}>
+            <Grid item xs={12} component="div">
               <motion.div variants={itemVariants}>
                 <Card
                   sx={{
@@ -555,7 +553,7 @@ export default function Upload() {
 
             {/* Error Alert */}
             {error && (
-              <Grid item xs={12}>
+              <Grid item xs={12} component="div">
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -568,7 +566,7 @@ export default function Upload() {
 
             {/* Progress */}
             {uploading && uploadProgress > 0 && (
-              <Grid item xs={12}>
+              <Grid item xs={12} component="div">
                 <motion.div variants={itemVariants}>
                   <Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
@@ -582,7 +580,7 @@ export default function Upload() {
             )}
 
             {/* Submit Button */}
-            <Grid item xs={12}>
+            <Grid item xs={12} component="div">
               <motion.div variants={itemVariants}>
                 <Button
                   type="submit"
@@ -610,7 +608,9 @@ export default function Upload() {
               </motion.div>
             </Grid>
           </Grid>
-        </form>
+          </form>
+        </motion.div>
+      </Box>
 
         {/* Create New Podcast Dialog */}
         <Dialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)} maxWidth="sm" fullWidth>
@@ -653,7 +653,7 @@ export default function Upload() {
             </Button>
           </DialogActions>
         </Dialog>
-      </motion.div>
+      </Box>
     </Container>
   );
 }

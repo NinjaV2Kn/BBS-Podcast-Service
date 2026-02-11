@@ -93,7 +93,7 @@ app.get('*', (req, res: Response) => {
       req.path.startsWith('/ready')) {
     return res.status(404).json({ error: 'Not found' });
   }
-  res.sendFile(path.join(publicPath, 'index.html'));
+  return res.sendFile(path.join(publicPath, 'index.html'));
 });
 
 app.listen(PORT, () => {
