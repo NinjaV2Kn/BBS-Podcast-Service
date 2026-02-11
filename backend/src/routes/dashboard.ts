@@ -9,7 +9,10 @@ const prisma = new PrismaClient();
 router.get('/overview', auth, async (req, res) => {
   try {
     const userId = req.user!.id;
+    
     // Get user's podcasts
+    const podcasts = await prisma.podcast.findMany({
+      where: { userId },
       include: {
         episodes: true,
       },
