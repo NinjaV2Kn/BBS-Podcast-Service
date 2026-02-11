@@ -12,7 +12,7 @@ const CreateCategorySchema = z.object({
 });
 
 // GET /categories - Fetch all categories
-router.get('/', async (req, res) => {
+router.get('/', async (_req, res) => {
   try {
     const categories = await prisma.category.findMany({
       include: {
@@ -56,13 +56,13 @@ router.post('/', auth, async (req, res) => {
       },
     });
 
-    res.status(201).json(category);
+    return res.status(201).json(category);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: error.errors[0].message });
     }
     console.error('Create category error:', error);
-    res.status(500).json({ error: 'Failed to create category' });
+    return res.status(500).json({ error: 'Failed to create category' });
   }
 });
 
@@ -79,13 +79,13 @@ router.put('/:id', auth, async (req, res) => {
       },
     });
 
-    res.json(category);
+    return res.json(category);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: error.errors[0].message });
     }
     console.error('Update category error:', error);
-    res.status(500).json({ error: 'Failed to update category' });
+    return res.status(500).json({ error: 'Failed to update category' });
   }
 });
 

@@ -47,9 +47,9 @@ router.post('/presign', auth, async (req, res) => {
 });
 
 // PUT /uploads/file/:filename - Handle local file upload (development mode)
-router.put('/file/:filename', async (req, res) => {
+router.put('/file/:filename', async (_req, res) => {
   try {
-    const filename = req.params.filename;
+    const filename = _req.params.filename;
     const filepath = path.join(uploadsDir, filename);
     
     // Ensure filename doesn't try to escape the uploads directory
@@ -60,7 +60,7 @@ router.put('/file/:filename', async (req, res) => {
     // Write file from request body
     const writeStream = fs.createWriteStream(filepath);
     
-    req.pipe(writeStream);
+    _req.pipe(writeStream);
     
     writeStream.on('finish', () => {
       return res.json({ 
@@ -93,7 +93,7 @@ router.options('/file/:filename', (req, res) => {
 // HEAD /uploads/file/:filename - Support HEAD requests
 router.head('/file/:filename', (_req, res) => {
   try {
-    const filename = req.params.filename;
+    const filename = _req.params.filename;
     const filepath = path.join(uploadsDir, filename);
     
     // Ensure filename doesn't try to escape the uploads directory

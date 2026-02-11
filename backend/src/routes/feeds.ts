@@ -10,9 +10,6 @@ const prisma = new PrismaClient();
  * @param baseUrl Base URL for the feed links
  */
 function generateRssFeed(podcast: any, episodes: any[], baseUrl: string): string {
-  const feedUrl = `${baseUrl}/feeds/${podcast.slug}.xml`;
-  const podcastUrl = `${baseUrl}/feeds/${podcast.slug}`;
-  
   // Format timestamp for RSS (RFC 2822)
   const formatRFC2822 = (date: Date) => {
     return new Date(date).toUTCString();
@@ -100,7 +97,7 @@ router.get('/:slug.xml', async (req, res: Response) => {
 });
 
 // GET /feeds/all.xml - Global RSS feed with ALL episodes from ALL podcasts
-router.get('/all.xml', async (req, res: Response) => {
+router.get('/all.xml', async (_req, res: Response) => {
   try {
     // Fetch all podcasts with their episodes
     const podcasts = await prisma.podcast.findMany({

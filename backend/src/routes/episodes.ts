@@ -16,16 +16,16 @@ const CreateEpisodeSchema = z.object({
 });
 
 // GET /episodes - Fetch all episodes
-router.get('/', async (req, res) => {
+router.get('/', async (_req, res) => {
   try {
     const episodes = await prisma.episode.findMany({
       include: { podcast: true, plays: true },
       orderBy: { publishedAt: 'desc' },
     });
-    res.json(episodes);
+    return res.json(episodes);
   } catch (error) {
     console.error('Get episodes error:', error);
-    res.status(500).json({ error: 'Failed to fetch episodes' });
+    return res.status(500).json({ error: 'Failed to fetch episodes' });
   }
 });
 
@@ -78,13 +78,13 @@ router.post('/', auth, async (req, res) => {
       include: { podcast: true },
     });
     
-    res.status(201).json(episode);
+    return res.status(201).json(episode);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: error.errors[0].message });
     }
     console.error('Create episode error:', error);
-    res.status(500).json({ error: 'Failed to create episode' });
+    return res.status(500).json({ error: 'Failed to create episode' });
   }
 });
 
@@ -100,10 +100,10 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Episode not found' });
     }
     
-    res.json(episode);
+    return res.json(episode);
   } catch (error) {
     console.error('Get episode error:', error);
-    res.status(500).json({ error: 'Failed to fetch episode' });
+    return res.status(500).json({ error: 'Failed to fetch episode' });
   }
 });
 
