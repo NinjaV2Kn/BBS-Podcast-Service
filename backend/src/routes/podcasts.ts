@@ -30,7 +30,7 @@ router.get('/', async (_req, res) => {
       orderBy: { createdAt: 'desc' },
     });
 
-    res.json(podcasts);
+    return res.json(podcasts);
   } catch (error) {
     console.error('Get podcasts error:', error);
     return res.status(500).json({ error: 'Failed to fetch podcasts' });

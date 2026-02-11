@@ -47,7 +47,7 @@ router.post('/presign', auth, async (req, res) => {
 });
 
 // PUT /uploads/file/:filename - Handle local file upload (development mode)
-router.put('/file/:filename', async (_req, res) => {
+router.put('/file/:filename', async (req, res) => {
   try {
     const filename = _req.params.filename;
     const filepath = path.join(uploadsDir, filename);
@@ -60,7 +60,7 @@ router.put('/file/:filename', async (_req, res) => {
     // Write file from request body
     const writeStream = fs.createWriteStream(filepath);
     
-    _req.pipe(writeStream);
+    req.pipe(writeStream);
     
     writeStream.on('finish', () => {
       return res.json({ 
@@ -79,7 +79,7 @@ router.put('/file/:filename', async (_req, res) => {
 });
 
 // OPTIONS /uploads/file/:filename - Handle preflight requests
-router.options('/file/:filename', (req, res) => {
+router.options('/file/:filename', (_req, res) => {
   res.set({
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
@@ -119,11 +119,11 @@ router.head('/file/:filename', (_req, res) => {
       'Accept-Ranges': 'bytes'
     });
     
-    res.end();
+    return res.end();
   } catch (error) {
     console.error('HEAD error:', error);
     res.header('Access-Control-Allow-Origin', '*');
-    res.status(500).end();
+    return res.status(500).end();
   }
 });
 
