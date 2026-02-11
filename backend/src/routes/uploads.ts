@@ -47,7 +47,7 @@ router.post('/presign', auth, async (req, res) => {
 });
 
 // PUT /uploads/file/:filename - Handle local file upload (development mode)
-router.put('/file/:filename', async (req, res) => {
+router.put('/file/:filename', async (req, res): Promise<void> => {
   try {
     const filename = req.params.filename;
     const filepath = path.join(uploadsDir, filename);
@@ -60,17 +60,26 @@ router.put('/file/:filename', async (req, res) => {
     // Write file from request body
     const writeStream = fs.createWriteStream(filepath);
     
-    req.pipe(writeStream);
-    
-    writeStream.on('finish', () => {
-      return res.json({ 
-        success: true, 
-        url: `http://localhost:8080/uploads/file/${filename}` 
+    return new Promise<void>((resolve, reject) => {
+      req.pipe(writeStream);
+      
+      writeStream.on('finish', () => {
+        res.json({ 
+          success: true, 
+          url: `http://localhost:8080/uploads/file/${filename}` 
+        });
+        resolve();
       });
-    });
-    
-    writeStream.on('error', (_error) => {
-      return res.status(500).json({ error: 'Failed to save file' });
+      
+      writeStream.on('error', (error) => {
+        res.status(500).json({ error: 'Failed to save file' });
+        reject(error);
+      });
+      
+      req.on('error', (error) => {
+        res.status(500).json({ error: 'Failed to upload file' });
+        reject(error);
+      });
     });
   } catch (error) {
     console.error('Upload error:', error);
