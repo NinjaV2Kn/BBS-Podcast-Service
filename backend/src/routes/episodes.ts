@@ -51,6 +51,20 @@ router.post('/', auth, async (req, res) => {
     console.log('User:', req.user);
     console.log('Request body:', JSON.stringify(req.body, null, 2));
     
+    // Verify user exists in database
+    const userExists = await prisma.user.findUnique({
+      where: { id: req.user!.id },
+    });
+    
+    if (!userExists) {
+      console.error('❌ User not found in database:', req.user!.id);
+      return res.status(401).json({ 
+        error: 'User session invalid. Please log in again.',
+        reason: 'User record not found' 
+      });
+    }
+    console.log('✅ User verified in database');
+    
     const body = CreateEpisodeSchema.parse(req.body);
     console.log('Validation passed. Parsed body:', body);
     
