@@ -48,6 +48,12 @@ COPY --from=backend-builder /app/backend/prisma ./backend/prisma
 # Copy frontend build output
 COPY --from=frontend-builder /app/frontend/dist ./backend/dist/public
 
+# Rebuild native modules in runtime environment
+RUN cd /app/backend && \
+    apk add --no-cache python3 make g++ && \
+    npm rebuild && \
+    apk del python3 make g++
+
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
