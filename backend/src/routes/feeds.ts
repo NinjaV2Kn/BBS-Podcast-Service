@@ -187,7 +187,7 @@ router.get('/:slug', async (req, res: Response) => {
 
     return res.json({
       podcast,
-      rssUrl: `http://localhost:8080/feeds/${slug}.xml`,
+      rssUrl: `/feeds/${slug}.xml`,
     });
   } catch (error) {
     console.error('Get feed error:', error);

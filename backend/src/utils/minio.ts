@@ -58,5 +58,5 @@ export const generatePresignedUrl = async (
   }
   
   // Mock URL for local development (backend will handle the upload)
-  return `http://localhost:8080/uploads/file/${objectName}`;
+  return `/uploads/file/${objectName}`;
 };

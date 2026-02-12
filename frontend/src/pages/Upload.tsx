@@ -72,7 +72,7 @@ export default function Upload() {
     const fetchPodcasts = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8080/podcasts', {
+        const response = await fetch('/podcasts', {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         const data = await response.json();
@@ -159,7 +159,7 @@ export default function Upload() {
       // Step 0: Upload cover if provided
       if (coverFile) {
         setUploadProgress(20);
-        const coverPresignResponse = await fetch('http://localhost:8080/uploads/presign', {
+        const coverPresignResponse = await fetch('/uploads/presign', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -185,7 +185,7 @@ export default function Upload() {
       }
 
       setUploadProgress(40);
-      const presignResponse = await fetch('http://localhost:8080/uploads/presign', {
+      const presignResponse = await fetch('/uploads/presign', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -236,7 +236,7 @@ export default function Upload() {
         episodeBody.coverUrl = coverUrl;
       }
 
-      const episodeResponse = await fetch('http://localhost:8080/episodes', {
+      const episodeResponse = await fetch('/episodes', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

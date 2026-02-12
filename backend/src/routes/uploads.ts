@@ -67,7 +67,7 @@ router.put('/file/:filename', async (req, res): Promise<void> => {
       writeStream.on('finish', () => {
         res.json({ 
           success: true, 
-          url: `http://localhost:8080/uploads/file/${filename}` 
+          url: `/uploads/file/${filename}` 
         });
         resolve();
       });

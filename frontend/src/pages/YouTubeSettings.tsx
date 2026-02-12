@@ -21,7 +21,7 @@ export default function YouTubeSettings() {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8080/api/youtube/status', {
+      const response = await fetch('/api/youtube/status', {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -45,7 +45,7 @@ export default function YouTubeSettings() {
   const handleDisconnect = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8080/api/youtube/disconnect', {
+      const response = await fetch('/api/youtube/disconnect', {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });

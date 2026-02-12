@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 
 export default function FeedPreview() {
   const { slug } = useParams();
-  const feedUrl = `http://localhost:8080/feeds/${slug}.xml`;
+  const feedUrl = `/feeds/${slug}.xml`;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">

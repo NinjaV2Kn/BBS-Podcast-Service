@@ -76,13 +76,13 @@ export default function Community() {
 
   const fetchPodcasts = async () => {
     try {
-      const response = await fetch('http://localhost:8080/podcasts');
+      const response = await fetch('/podcasts');
       const data = await response.json();
 
       const podcastsWithEpisodes = await Promise.all(
         (Array.isArray(data) ? data : []).map(async (podcast: any) => {
           try {
-            const feedResponse = await fetch(`http://localhost:8080/feeds/${podcast.slug}`);
+            const feedResponse = await fetch(`/feeds/${podcast.slug}`);
             const feedData = await feedResponse.json();
             return {
               ...podcast,

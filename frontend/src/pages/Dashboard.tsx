@@ -100,7 +100,7 @@ export default function Dashboard() {
         const token = localStorage.getItem('token');
 
         const analyticsResponse = await fetch(
-          'http://localhost:8080/api/dashboard/overview',
+          '/api/dashboard/overview',
           {
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -110,7 +110,7 @@ export default function Dashboard() {
         const analyticsData = await analyticsResponse.json();
         setData(analyticsData);
 
-        const podcastsResponse = await fetch('http://localhost:8080/podcasts', {
+        const podcastsResponse = await fetch('/podcasts', {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -127,7 +127,7 @@ export default function Dashboard() {
             async (podcast: any) => {
               try {
                 const feedResponse = await fetch(
-                  `http://localhost:8080/feeds/${podcast.slug}`
+                  `/feeds/${podcast.slug}`
                 );
                 const feedData = await feedResponse.json();
                 return {
@@ -162,7 +162,7 @@ export default function Dashboard() {
     if (!editingId) return;
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8080/podcasts/${editingId}`, {
+      const response = await fetch(`/podcasts/${editingId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -197,7 +197,7 @@ export default function Dashboard() {
     if (!deletingId) return;
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8080/podcasts/${deletingId}`, {
+      const response = await fetch(`/podcasts/${deletingId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -220,7 +220,7 @@ export default function Dashboard() {
   const deleteEpisode = async (episodeId: string, podcastId: string) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8080/episodes/${episodeId}`, {
+      const response = await fetch(`/episodes/${episodeId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
