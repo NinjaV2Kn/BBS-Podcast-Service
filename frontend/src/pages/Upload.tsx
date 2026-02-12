@@ -556,7 +556,7 @@ export default function Upload() {
 
             {/* Error Alert */}
             {error && (
-              <Grid item xs={12} component="div">
+              <Grid item xs={12}>
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -569,7 +569,7 @@ export default function Upload() {
 
             {/* Progress */}
             {uploading && uploadProgress > 0 && (
-              <Grid item xs={12} component="div">
+              <Grid item xs={12}>
                 <motion.div variants={itemVariants}>
                   <Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
