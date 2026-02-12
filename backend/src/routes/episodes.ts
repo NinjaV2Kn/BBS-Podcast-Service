@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 import { auth } from '../middleware/auth';
+import { normalizeUrl } from '../utils/hash';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -22,7 +23,18 @@ router.get('/', async (_req, res) => {
       include: { podcast: true, plays: true },
       orderBy: { publishedAt: 'desc' },
     });
-    return res.json(episodes);
+    
+    // Normalize URLs in episodes for CSP compliance
+    const normalized = episodes.map(ep => ({
+      ...ep,
+      audioUrl: normalizeUrl(ep.audioUrl),
+      podcast: ep.podcast ? {
+        ...ep.podcast,
+        coverUrl: normalizeUrl(ep.podcast.coverUrl),
+      } : null,
+    }));
+    
+    return res.json(normalized);
   } catch (error) {
     console.error('Get episodes error:', error);
     return res.status(500).json({ error: 'Failed to fetch episodes' });
@@ -78,7 +90,17 @@ router.post('/', auth, async (req, res) => {
       include: { podcast: true },
     });
     
-    return res.status(201).json(episode);
+    // Normalize URLs in response
+    const response = {
+      ...episode,
+      audioUrl: normalizeUrl(episode.audioUrl),
+      podcast: episode.podcast ? {
+        ...episode.podcast,
+        coverUrl: normalizeUrl(episode.podcast.coverUrl),
+      } : null,
+    };
+    
+    return res.status(201).json(response);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: error.errors[0].message });
@@ -100,7 +122,17 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Episode not found' });
     }
     
-    return res.json(episode);
+    // Normalize URLs in response
+    const response = {
+      ...episode,
+      audioUrl: normalizeUrl(episode.audioUrl),
+      podcast: episode.podcast ? {
+        ...episode.podcast,
+        coverUrl: normalizeUrl(episode.podcast.coverUrl),
+      } : null,
+    };
+    
+    return res.json(response);
   } catch (error) {
     console.error('Get episode error:', error);
     return res.status(500).json({ error: 'Failed to fetch episode' });

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 import { auth } from '../middleware/auth';
+import { normalizeUrl } from '../utils/hash';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -30,7 +31,13 @@ router.get('/', async (_req, res) => {
       orderBy: { createdAt: 'desc' },
     });
 
-    return res.json(podcasts);
+    // Normalize URLs in podcasts
+    const normalized = podcasts.map(p => ({
+      ...p,
+      coverUrl: normalizeUrl(p.coverUrl),
+    }));
+
+    return res.json(normalized);
   } catch (error) {
     console.error('Get podcasts error:', error);
     return res.status(500).json({ error: 'Failed to fetch podcasts' });

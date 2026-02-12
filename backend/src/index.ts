@@ -28,10 +28,27 @@ const logger = pinoHttp({
 // Middleware
 app.use(logger);
 
-// Helmet with disabled CORP/COOP for uploads
+// Helmet with custom CSP for media serving
 app.use(helmet({
   crossOriginOpenerPolicy: false,
   crossOriginResourcePolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https:"],
+      imgSrc: ["'self'", "data:", "https:"],
+      mediaSrc: ["'self'"],
+      fontSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'"],
+      frameSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+      frameAncestors: ["'self'"],
+      upgradeInsecureRequests: [],
+    },
+  },
 }));
 
 // CORS - Allow all origins for development
