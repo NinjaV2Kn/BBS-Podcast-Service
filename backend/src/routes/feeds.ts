@@ -1,5 +1,6 @@
 import { Router, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { normalizeUrl } from '../utils/hash';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -27,7 +28,7 @@ function generateRssFeed(podcast: any, episodes: any[], baseUrl: string): string
       <link>${podcastUrl}/${episode.id}</link>
       <guid>${baseUrl}/episodes/${episode.id}</guid>
       <pubDate>${formatRFC2822(episode.publishedAt)}</pubDate>
-      <enclosure url="${escapeXml(episode.audioUrl)}" type="audio/mpeg" />
+      <enclosure url="${escapeXml(normalizeUrl(episode.audioUrl) || '')}" type="audio/mpeg" />
     </item>`
     )
     .join('\n');
@@ -138,7 +139,7 @@ router.get('/all.xml', async (_req, res: Response) => {
       <link>${baseUrl}/episodes/${episode.id}</link>
       <guid>${baseUrl}/episodes/${episode.id}</guid>
       <pubDate>${formatRFC2822(episode.publishedAt)}</pubDate>
-      <enclosure url="${escapeXml(episode.audioUrl)}" type="audio/mpeg" />
+      <enclosure url="${escapeXml(normalizeUrl(episode.audioUrl) || '')}" type="audio/mpeg" />
       <itunes:author>${escapeXml(episode.podcastTitle)}</itunes:author>
     </item>`
       )
@@ -185,8 +186,18 @@ router.get('/:slug', async (req, res: Response) => {
       return res.status(404).json({ error: 'Podcast not found' });
     }
 
+    // Normalize URLs in episodes for CSP compliance
+    const normalizedPodcast = {
+      ...podcast,
+      coverUrl: normalizeUrl(podcast.coverUrl),
+      episodes: podcast.episodes.map(ep => ({
+        ...ep,
+        audioUrl: normalizeUrl(ep.audioUrl),
+      })),
+    };
+
     return res.json({
-      podcast,
+      podcast: normalizedPodcast,
       rssUrl: `/feeds/${slug}.xml`,
     });
   } catch (error) {

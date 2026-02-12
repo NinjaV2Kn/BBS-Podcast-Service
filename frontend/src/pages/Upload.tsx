@@ -147,11 +147,6 @@ export default function Upload() {
       setError('Please select or create a podcast');
       return;
     }
-
-    setUploading(true);
-    setError('');
-    setUploadProgress(0);
-
     try {
       const token = localStorage.getItem('token');
       let coverUrl = '';
@@ -177,9 +172,8 @@ export default function Upload() {
           });
 
           if (coverUploadResponse.ok) {
-            coverUrl = coverUploadUrl.includes('localhost:8080')
-              ? coverUploadUrl
-              : `http://localhost:8080/uploads/file/${coverObjectKey}`;
+            // Always use relative path for CSP compliance
+            coverUrl = `/uploads/file/${coverObjectKey}`;
           }
         }
       }
@@ -213,9 +207,8 @@ export default function Upload() {
       }
 
       setUploadProgress(80);
-      const audioUrl = url.includes('localhost:8080') 
-        ? url 
-        : `http://localhost:8080/uploads/file/${objectKey}`;
+      // Always use relative path for CSP compliance
+      const audioUrl = `/uploads/file/${objectKey}`;
 
       let finalPodcastTitle = '';
       if (createNewPodcast) {
