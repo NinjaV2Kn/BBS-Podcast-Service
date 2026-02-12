@@ -61,6 +61,9 @@ RUN addgroup -g 1001 -S nodejs && \
 # Create uploads directory
 RUN mkdir -p /app/backend/uploads && chmod 755 /app/backend/uploads
 
+# Create data directory for SQLite database
+RUN mkdir -p /app/backend/data && chmod 755 /app/backend/data
+
 # Fix permissions
 RUN chown -R nodejs:nodejs /app
 
