@@ -18,11 +18,14 @@ FROM node:20-alpine AS backend-builder
 
 WORKDIR /app/backend
 
+# Install build dependencies for native modules (argon2)
+RUN apk add --no-cache python3 make g++
+
 COPY backend/package*.json ./
 COPY backend/tsconfig.json ./
 COPY backend/prisma/ ./prisma/
 
-RUN npm ci --ignore-scripts
+RUN npm ci
 
 COPY backend/src/ ./src/
 
