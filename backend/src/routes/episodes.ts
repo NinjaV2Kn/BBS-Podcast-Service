@@ -25,14 +25,17 @@ router.get('/', async (_req, res) => {
     });
     
     // Normalize URLs in episodes for CSP compliance
-    const normalized = episodes.map(ep => ({
-      ...ep,
-      audioUrl: normalizeUrl(ep.audioUrl),
-      podcast: ep.podcast ? {
-        ...ep.podcast,
-        coverUrl: normalizeUrl(ep.podcast.coverUrl),
-      } : null,
-    }));
+    const normalized = episodes.map(ep => {
+      const podcast = ep.podcast;
+      return {
+        ...ep,
+        audioUrl: normalizeUrl(ep.audioUrl),
+        podcast: podcast ? {
+          ...podcast,
+          coverUrl: normalizeUrl(podcast.coverUrl),
+        } : null,
+      };
+    });
     
     return res.json(normalized);
   } catch (error) {
@@ -49,30 +52,39 @@ router.post('/', auth, async (req, res) => {
     // Find or create podcast
     let podcastId = body.podcastId;
     if (!podcastId && body.podcastTitle) {
-      const podcast = await prisma.podcast.findFirst({
-        where: { userId: req.user!.id, title: body.podcastTitle },
-      });
-      
-      if (podcast) {
-        podcastId = podcast.id;
-      } else {
-        // Create new podcast
-        const newPodcast = await prisma.podcast.create({
-          data: {
-            title: body.podcastTitle,
-            userId: req.user!.id,
-            slug: body.podcastTitle.toLowerCase().replace(/\s+/g, '-'),
-            coverUrl: body.coverUrl,
-          },
+      try {
+        const podcast = await prisma.podcast.findFirst({
+          where: { userId: req.user!.id, title: body.podcastTitle },
         });
-        podcastId = newPodcast.id;
+        
+        if (podcast) {
+          podcastId = podcast.id;
+        } else {
+          // Create new podcast
+          const newPodcast = await prisma.podcast.create({
+            data: {
+              title: body.podcastTitle,
+              userId: req.user!.id,
+              slug: body.podcastTitle.toLowerCase().replace(/\s+/g, '-'),
+              coverUrl: body.coverUrl || null,
+            },
+          });
+          podcastId = newPodcast.id;
+        }
+      } catch (podcastError) {
+        console.error('Podcast lookup/creation error:', podcastError);
+        return res.status(500).json({ error: 'Failed to create or find podcast' });
       }
     } else if (podcastId && body.coverUrl) {
       // Update existing podcast with cover if provided
-      await prisma.podcast.update({
-        where: { id: podcastId },
-        data: { coverUrl: body.coverUrl },
-      });
+      try {
+        await prisma.podcast.update({
+          where: { id: podcastId },
+          data: { coverUrl: body.coverUrl },
+        });
+      } catch (updateError) {
+        console.error('Podcast update error:', updateError);
+      }
     }
     
     if (!podcastId) {
@@ -83,7 +95,7 @@ router.post('/', auth, async (req, res) => {
     const episode = await prisma.episode.create({
       data: {
         title: body.title,
-        description: body.description,
+        description: body.description || null,
         audioUrl: body.audioUrl,
         podcastId,
       },
@@ -91,12 +103,13 @@ router.post('/', auth, async (req, res) => {
     });
     
     // Normalize URLs in response
+    const podcast = episode.podcast;
     const response = {
       ...episode,
       audioUrl: normalizeUrl(episode.audioUrl),
-      podcast: episode.podcast ? {
-        ...episode.podcast,
-        coverUrl: normalizeUrl(episode.podcast.coverUrl),
+      podcast: podcast ? {
+        ...podcast,
+        coverUrl: normalizeUrl(podcast.coverUrl),
       } : null,
     };
     
