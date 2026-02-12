@@ -47,20 +47,32 @@ router.get('/', async (_req, res) => {
 // POST /episodes - Create new episode
 router.post('/', auth, async (req, res) => {
   try {
+    console.log('=== EPISODE CREATION REQUEST ===');
+    console.log('User:', req.user);
+    console.log('Request body:', JSON.stringify(req.body, null, 2));
+    
     const body = CreateEpisodeSchema.parse(req.body);
+    console.log('Validation passed. Parsed body:', body);
     
     // Find or create podcast
     let podcastId = body.podcastId;
+    console.log('Initial podcastId:', podcastId);
+    console.log('Podcast title:', body.podcastTitle);
+    
     if (!podcastId && body.podcastTitle) {
       try {
+        console.log('Looking for existing podcast:', body.podcastTitle);
         const podcast = await prisma.podcast.findFirst({
           where: { userId: req.user!.id, title: body.podcastTitle },
         });
+        console.log('Podcast search result:', podcast);
         
         if (podcast) {
           podcastId = podcast.id;
+          console.log('Using existing podcast ID:', podcastId);
         } else {
           // Create new podcast
+          console.log('Creating new podcast...');
           const newPodcast = await prisma.podcast.create({
             data: {
               title: body.podcastTitle,
@@ -70,27 +82,32 @@ router.post('/', auth, async (req, res) => {
             },
           });
           podcastId = newPodcast.id;
+          console.log('Created new podcast:', newPodcast.id);
         }
       } catch (podcastError) {
-        console.error('Podcast lookup/creation error:', podcastError);
-        return res.status(500).json({ error: 'Failed to create or find podcast' });
+        console.error('❌ Podcast lookup/creation error:', podcastError);
+        throw podcastError;
       }
     } else if (podcastId && body.coverUrl) {
       // Update existing podcast with cover if provided
       try {
+        console.log('Updating podcast with cover...');
         await prisma.podcast.update({
           where: { id: podcastId },
           data: { coverUrl: body.coverUrl },
         });
+        console.log('Podcast updated successfully');
       } catch (updateError) {
         console.error('Podcast update error:', updateError);
       }
     }
     
     if (!podcastId) {
+      console.error('❌ No podcast ID after processing');
       return res.status(400).json({ error: 'Podcast ID or title required' });
     }
     
+    console.log('Creating episode with podcastId:', podcastId);
     // Create episode
     const episode = await prisma.episode.create({
       data: {
@@ -101,6 +118,7 @@ router.post('/', auth, async (req, res) => {
       },
       include: { podcast: true },
     });
+    console.log('✅ Episode created successfully:', episode.id);
     
     // Normalize URLs in response
     const podcast = episode.podcast;
@@ -113,13 +131,20 @@ router.post('/', auth, async (req, res) => {
       } : null,
     };
     
+    console.log('✅ Episode creation response normalized and ready to send');
     return res.status(201).json(response);
   } catch (error) {
+    console.error('=== EPISODE CREATION ERROR ===');
+    console.error('Error type:', error instanceof Error ? error.constructor.name : typeof error);
+    console.error('Error message:', error instanceof Error ? error.message : String(error));
+    console.error('Full error:', error);
+    
     if (error instanceof z.ZodError) {
+      console.error('Validation error details:', error.errors);
       return res.status(400).json({ error: error.errors[0].message });
     }
-    console.error('Create episode error:', error);
-    return res.status(500).json({ error: 'Failed to create episode' });
+    
+    return res.status(500).json({ error: 'Failed to create episode', details: error instanceof Error ? error.message : String(error) });
   }
 });
 
