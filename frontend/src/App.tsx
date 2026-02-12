@@ -13,6 +13,7 @@ import FeedPreview from './pages/FeedPreview';
 import PrivateRoute from './components/PrivateRoute';
 import PublicRoute from './components/PublicRoute';
 import { ThemeProvider, useTheme } from './ThemeContext';
+import { PlayerProvider } from './contexts/PlayerContext';
 import { lightTheme, darkTheme } from './theme';
 
 function AppContent() {
@@ -45,7 +46,9 @@ function AppContent() {
 function App() {
   return (
     <ThemeProvider>
-      <AppContent />
+      <PlayerProvider>
+        <AppContent />
+      </PlayerProvider>
     </ThemeProvider>
   );
 }

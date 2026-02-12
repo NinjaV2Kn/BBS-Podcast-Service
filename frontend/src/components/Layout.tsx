@@ -18,6 +18,7 @@ import { Brightness4, Brightness7, Menu as MenuIcon, Close as CloseIcon } from '
 import { useState } from 'react';
 import { useAuth } from '../utils/auth';
 import { useTheme } from '../ThemeContext';
+import GlobalAudioPlayer from './GlobalAudioPlayer';
 
 export default function Layout() {
   const { isAuthenticated, logout } = useAuth();
@@ -318,6 +319,9 @@ export default function Layout() {
       <Box component="main" sx={{ flex: 1 }}>
         <Outlet />
       </Box>
+
+      {/* Global Audio Player - Persists across routes */}
+      <GlobalAudioPlayer />
 
       {/* Footer */}
       <Box

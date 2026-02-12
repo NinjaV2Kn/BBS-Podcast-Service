@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../ThemeContext';
+import { usePlayer } from '../contexts/PlayerContext';
 import {
   Container,
   Card,
@@ -9,13 +10,11 @@ import {
   TextField,
   Box,
   CircularProgress,
-  LinearProgress,
   Stack,
   IconButton,
-  Paper,
   Avatar,
 } from '@mui/material';
-import { PlayArrow, Pause, Close, Search, Podcasts, Radio as RadioIcon } from '@mui/icons-material';
+import { PlayArrow, Pause, Search, Podcasts, Radio as RadioIcon } from '@mui/icons-material';
 
 interface Episode {
   id: string;
@@ -59,15 +58,9 @@ const itemVariants = {
 
 export default function Community() {
   const { isDarkMode } = useTheme();
+  const { selectedEpisode, isPlaying, setSelectedEpisode, setIsPlaying } = usePlayer();
   const [podcasts, setPodcasts] = useState<Podcast[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedEpisode, setSelectedEpisode] = useState<{
-    episodeId: string;
-    url: string;
-    title: string;
-    podcast: string;
-  } | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
@@ -405,176 +398,6 @@ export default function Community() {
           )}
         </motion.div>
       </Container>
-
-      {/* Audio Player */}
-      {selectedEpisode && (
-        <AudioPlayer
-          episode={selectedEpisode}
-          isPlaying={isPlaying}
-          onPlayPause={() => setIsPlaying(!isPlaying)}
-          onClose={() => {
-            setSelectedEpisode(null);
-            setIsPlaying(false);
-          }}
-        />
-      )}
     </Box>
-  );
-}
-
-// Audio Player Component
-interface AudioPlayerProps {
-  episode: {
-    episodeId: string;
-    url: string;
-    title: string;
-    podcast: string;
-  };
-  isPlaying: boolean;
-  onPlayPause: () => void;
-  onClose: () => void;
-}
-
-function AudioPlayer({ episode, isPlaying, onPlayPause, onClose }: AudioPlayerProps) {
-  const { isDarkMode } = useTheme();
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (isPlaying) {
-      audio.play().catch(console.error);
-    } else {
-      audio.pause();
-    }
-  }, [isPlaying]);
-
-  const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime);
-    }
-  };
-
-  const handleLoadedMetadata = () => {
-    if (audioRef.current) {
-      setDuration(audioRef.current.duration);
-    }
-  };
-
-  const handleEnded = () => {
-    onPlayPause();
-  };
-
-  const formatTime = (time: number) => {
-    if (!isFinite(time)) return '0:00';
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  const progress = duration ? (currentTime / duration) * 100 : 0;
-
-  return (
-    <motion.div
-      initial={{ y: 100 }}
-      animate={{ y: 0 }}
-      exit={{ y: 100 }}
-      transition={{ duration: 0.3 }}
-    >
-      <Paper
-        sx={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1000,
-          borderRadius: 0,
-          background: isDarkMode
-            ? 'linear-gradient(180deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%)'
-            : 'linear-gradient(180deg, rgba(248, 250, 252, 0.95) 0%, rgba(240, 244, 248, 0.95) 100%)',
-          backdropFilter: 'blur(20px)',
-          borderTop: `1px solid ${isDarkMode ? 'rgba(148, 163, 184, 0.2)' : 'rgba(0, 0, 0, 0.05)'}`,
-          boxShadow: isDarkMode
-            ? '0 -20px 40px rgba(0, 0, 0, 0.3)'
-            : '0 -20px 40px rgba(0, 0, 0, 0.1)',
-        }}
-      >
-        <audio
-          ref={audioRef}
-          src={episode.url}
-          onTimeUpdate={handleTimeUpdate}
-          onLoadedMetadata={handleLoadedMetadata}
-          onEnded={handleEnded}
-        />
-
-        <Container maxWidth="lg" sx={{ py: 2 }}>
-          {/* Progress Bar */}
-          <Box sx={{ mb: 2 }}>
-            <LinearProgress
-              variant="determinate"
-              value={progress}
-              sx={{
-                height: 3,
-                borderRadius: '2px',
-                background: isDarkMode ? 'rgba(148, 163, 184, 0.1)' : 'rgba(0, 0, 0, 0.05)',
-                '& .MuiLinearProgress-bar': {
-                  background: 'linear-gradient(90deg, #818cf8 0%, #f472b6 100%)',
-                },
-              }}
-            />
-          </Box>
-
-          {/* Player Controls */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <IconButton
-                onClick={onPlayPause}
-                sx={{
-                  background: 'linear-gradient(135deg, #818cf8 0%, #f472b6 100%)',
-                  color: '#fff',
-                  boxShadow: '0 4px 12px rgba(129, 140, 248, 0.3)',
-                  '&:hover': {
-                    boxShadow: '0 8px 24px rgba(129, 140, 248, 0.4)',
-                  },
-                }}
-              >
-                {isPlaying ? <Pause /> : <PlayArrow />}
-              </IconButton>
-            </motion.button>
-
-            {/* Episode Info */}
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography variant="caption" sx={{ opacity: 0.7, display: 'block' }}>
-                {episode.podcast}
-              </Typography>
-              <Typography variant="subtitle2" sx={{ fontWeight: 600 }} noWrap>
-                {episode.title}
-              </Typography>
-            </Box>
-
-            {/* Time Display */}
-            <Typography variant="caption" sx={{ opacity: 0.7, whiteSpace: 'nowrap' }}>
-              {formatTime(currentTime)} / {formatTime(duration)}
-            </Typography>
-
-            {/* Close Button */}
-            <IconButton
-              onClick={onClose}
-              sx={{
-                color: isDarkMode ? '#94a3b8' : '#64748b',
-                '&:hover': {
-                  color: '#ef4444',
-                },
-              }}
-            >
-              <Close />
-            </IconButton>
-          </Box>
-        </Container>
-      </Paper>
-    </motion.div>
   );
 }
