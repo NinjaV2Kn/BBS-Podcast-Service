@@ -59,13 +59,13 @@ RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
 # Create uploads directory
-RUN mkdir -p /app/backend/uploads && chmod 755 /app/backend/uploads
+RUN mkdir -p /app/backend/uploads && chmod 777 /app/backend/uploads
 
 # Create data directory for SQLite database
-RUN mkdir -p /app/backend/data && chmod 755 /app/backend/data
+RUN mkdir -p /app/backend/data && chmod 777 /app/backend/data
 
-# Fix permissions
-RUN chown -R nodejs:nodejs /app
+# Fix permissions for all app files
+RUN chown -R nodejs:nodejs /app && chmod -R u+rwX /app/backend/data /app/backend/uploads
 
 USER nodejs
 
