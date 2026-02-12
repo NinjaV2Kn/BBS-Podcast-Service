@@ -330,15 +330,101 @@ export default function Layout() {
             ? 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
             : 'linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)',
           borderTop: `1px solid ${isDarkMode ? '#334155' : '#e2e8f0'}`,
-          py: 4,
+          py: 6,
           mt: 8,
-          textAlign: 'center',
           color: isDarkMode ? '#cbd5e1' : '#64748b',
         }}
       >
         <Container maxWidth="lg">
-          <Box sx={{ fontSize: '0.875rem' }}>
-            © 2026 RSS-Cast. Built with ❤️ for podcast enthusiasts.
+          {/* Main Footer Content */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: isDarkMode ? '#f1f5f9' : '#1e293b' }}>
+              🎙️ BBS 2 Podcast Zentrum
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 3 }}>
+              Schulprojekt von Auszubildenden der BBS 2 Wolfsburg
+            </Typography>
+          </Box>
+
+          {/* Legal Links */}
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center', mb: 4 }}>
+            <Button 
+              size="small" 
+              onClick={() => window.scrollTo(0, 0)}
+              sx={{ textTransform: 'none', color: 'inherit', '&:hover': { color: '#818cf8' } }}
+            >
+              Impressum
+            </Button>
+            <Typography sx={{ opacity: 0.3 }}>•</Typography>
+            <Button 
+              size="small"
+              onClick={() => window.scrollTo(0, 0)}
+              sx={{ textTransform: 'none', color: 'inherit', '&:hover': { color: '#818cf8' } }}
+            >
+              Datenschutz
+            </Button>
+            <Typography sx={{ opacity: 0.3 }}>•</Typography>
+            <Button 
+              size="small"
+              onClick={() => window.scrollTo(0, 0)}
+              sx={{ textTransform: 'none', color: 'inherit', '&:hover': { color: '#818cf8' } }}
+            >
+              Kontakt
+            </Button>
+          </Box>
+
+          {/* Impressum Section */}
+          <Box sx={{ mb: 4, py: 3, px: 2, background: isDarkMode ? 'rgba(15, 23, 42, 0.5)' : 'rgba(248, 250, 252, 0.5)', borderRadius: 1 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5 }}>
+              Impressum
+            </Typography>
+            <Typography variant="caption" sx={{ display: 'block', lineHeight: 1.8 }}>
+              <strong>Verantwortlich:</strong> BBS 2 Wolfsburg, Klasse von Auszubildenden<br />
+              <strong>Schuladresse:</strong> BBS 2 Wolfsburg, Schulweg 1, 38440 Wolfsburg, Deutschland<br />
+              <strong>Telefon:</strong> +49 5361 89-0<br />
+              <strong>E-Mail:</strong> info@bbs2-wolfsburg.de<br />
+              <strong>Vertreten durch:</strong> Die Schulleitung der BBS 2 Wolfsburg<br />
+              <br />
+              Dieses Projekt wurde im Rahmen der Ausbildung von Auszubildenden der BBS 2 Wolfsburg entwickelt.
+            </Typography>
+          </Box>
+
+          {/* Datenschutz Section */}
+          <Box sx={{ mb: 4, py: 3, px: 2, background: isDarkMode ? 'rgba(15, 23, 42, 0.5)' : 'rgba(248, 250, 252, 0.5)', borderRadius: 1 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5 }}>
+              Datenschutzerklärung
+            </Typography>
+            <Typography variant="caption" sx={{ display: 'block', lineHeight: 1.8 }}>
+              <strong>Verantwortliche Stelle:</strong> BBS 2 Wolfsburg<br />
+              <br />
+              <strong>Erhobene Daten:</strong><br />
+              • Anmeldedaten (E-Mail, Passwort-Hash)<br />
+              • Podcast- und Episode-Metadaten<br />
+              • Anonymisierte Abspiel-Statistiken (IP-und User-Agent-Hashes)<br />
+              <br />
+              <strong>Datenschutz:</strong><br />
+              • Passwörter werden mit Argon2 gekapselt<br />
+              • IP-Adressen und User-Agents werden gehashed (SHA-256)<br />
+              • Keine Weitergabe an Dritte<br />
+              • Speicherung nur für Systemfunktionalität<br />
+              <br />
+              <strong>Ihre Rechte:</strong><br />
+              • Auskunftspflicht gemäß DSGVO Art. 15<br />
+              • Berichtigungsrecht gemäß DSGVO Art. 16<br />
+              • Löschungsrecht gemäß DSGVO Art. 17<br />
+              <br />
+              Kontakt für Datenschutzfragen: datenschutz@bbs2-wolfsburg.de
+            </Typography>
+          </Box>
+
+          {/* Copyright */}
+          <Box sx={{ textAlign: 'center', pt: 3, borderTop: `1px solid ${isDarkMode ? 'rgba(148, 163, 184, 0.1)' : 'rgba(0, 0, 0, 0.05)'}`, fontSize: '0.75rem' }}>
+            <Typography variant="caption" sx={{ display: 'block', mb: 1 }}>
+              © 2026 BBS 2 Podcast Zentrum. Schulprojekt der BBS 2 Wolfsburg.
+            </Typography>
+            <Typography variant="caption" sx={{ opacity: 0.6 }}>
+              Built with ❤️ von Auszubildenden | Powered by React + Node.js
+            </Typography>
           </Box>
         </Container>
       </Box>

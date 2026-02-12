@@ -7,7 +7,6 @@ import {
   Box,
   Container,
   Typography,
-  LinearProgress,
   IconButton,
 } from '@mui/material';
 import { PlayArrow, Pause, Close, FastRewind, FastForward } from '@mui/icons-material';
@@ -18,7 +17,6 @@ export default function GlobalAudioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [isSeeking, setIsSeeking] = useState(false);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -32,7 +30,7 @@ export default function GlobalAudioPlayer() {
   }, [isPlaying]);
 
   const handleTimeUpdate = () => {
-    if (audioRef.current && !isSeeking) {
+    if (audioRef.current) {
       setCurrentTime(audioRef.current.currentTime);
     }
   };
