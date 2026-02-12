@@ -556,7 +556,7 @@ export default function Upload() {
 
             {/* Error Alert */}
             {error && (
-              <Grid item xs={12}>
+              <Box sx={{ gridColumn: '1 / -1' }}>
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -564,12 +564,12 @@ export default function Upload() {
                 >
                   <Alert severity="error">{error}</Alert>
                 </motion.div>
-              </Grid>
+              </Box>
             )}
 
             {/* Progress */}
             {uploading && uploadProgress > 0 && (
-              <Grid item xs={12}>
+              <Box sx={{ gridColumn: '1 / -1' }}>
                 <motion.div variants={itemVariants}>
                   <Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
@@ -579,7 +579,7 @@ export default function Upload() {
                     <LinearProgress variant="determinate" value={uploadProgress} />
                   </Box>
                 </motion.div>
-              </Grid>
+              </Box>
             )}
 
             {/* Submit Button */}
