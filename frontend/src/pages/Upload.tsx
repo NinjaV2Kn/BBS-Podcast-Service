@@ -456,6 +456,7 @@ export default function Upload() {
             </Grid>
 
             {/* Audio File Upload - Drag and Drop */}
+            {/* @ts-ignore */}
             <Grid item xs={12} component="div">
               <motion.div variants={itemVariants}>
                 <Box
@@ -516,6 +517,7 @@ export default function Upload() {
             </Grid>
 
             {/* Episode Details */}
+            {/* @ts-ignore */}
             <Grid item xs={12} component="div">
               <motion.div variants={itemVariants}>
                 <Card
@@ -581,6 +583,7 @@ export default function Upload() {
             )}
 
             {/* Submit Button */}
+            {/* @ts-ignore */}
             <Grid item xs={12} component="div">
               <motion.div variants={itemVariants}>
                 <Button
