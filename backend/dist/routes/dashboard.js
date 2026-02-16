@@ -77,7 +77,7 @@ router.get('/overview', auth_1.auth, async (req, res) => {
     }
     catch (error) {
         console.error('Dashboard overview error:', error);
-        res.status(500).json({ error: 'Failed to fetch dashboard data' });
+        return res.status(500).json({ error: 'Failed to fetch dashboard data' });
     }
 });
 exports.default = router;

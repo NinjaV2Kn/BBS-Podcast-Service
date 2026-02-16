@@ -26,8 +26,11 @@ router.get('/:episodeId', async (req, res) => {
         }
         // Check referer header (GDPR-compliant: only count website plays)
         const referer = req.headers.referer || '';
-        const isFromWebsite = referer.includes('localhost:3000') ||
-            referer.includes('/podcasts');
+        const host = req.get('host') || '';
+        const isFromWebsite = referer.includes(host) ||
+            referer.includes('localhost:3000') ||
+            referer.includes('/podcasts') ||
+            referer.includes('/community');
         // Only track plays from website (not from external podcast apps)
         if (isFromWebsite) {
             const ip = getClientIp(req);
