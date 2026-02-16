@@ -1,9 +1,26 @@
-import { Router, Response } from 'express';
+import { Router, Response, Request } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { normalizeUrl } from '../utils/hash';
 
 const router = Router();
 const prisma = new PrismaClient();
+
+/**
+ * Get the backend URL from environment or request headers
+ * For production (Render): Uses BACKEND_URL env, falls back to x-forwarded headers
+ * For local dev: Uses localhost:8080
+ */
+function getBackendUrl(req: Request): string {
+  // Priority 1: Explicit BACKEND_URL env variable (for production)
+  if (process.env.BACKEND_URL) {
+    return process.env.BACKEND_URL;
+  }
+  
+  // Priority 2: Extract from request headers (auto-detect for Render)
+  const protocol = req.get('x-forwarded-proto') || 'http';
+  const host = req.get('x-forwarded-host') || req.get('host') || 'localhost:8080';
+  return `${protocol}://${host}`;
+}
 
 /**
  * Generate RSS XML for a podcast
@@ -40,6 +57,7 @@ function generateRssFeed(podcast: any, episodes: any[], baseUrl: string): string
       <itunes:author>${escapeXml(ownerName)}</itunes:author>
       ${duration > 0 ? `<itunes:duration>${duration}</itunes:duration>` : ''}
       <itunes:explicit>no</itunes:explicit>
+      <itunes:image href="${escapeXml(coverUrl)}" />
     </item>`;
       }
     )
@@ -85,9 +103,21 @@ function escapeXml(unsafe: string): string {
     .replace(/['"]/g, (c) => (c === '"' ? '&quot;' : '&#39;'));
 }
 
+// Helper to get backend URL from request or environment
+function getBackendUrl(req: any): string {
+  // Try to get from env first (for consistency)
+  if (process.env.BACKEND_URL) {
+    return process.env.BACKEND_URL;
+  }
+  // Fall back to request headers (for auto-detection)
+  const protocol = req.get('x-forwarded-proto') || 'http';
+  const host = req.get('x-forwarded-host') || req.get('host') || 'localhost:8080';
+  return `${protocol}://${host}`;
+}
+
 // GET /feeds/all.xml - Global RSS feed with ALL episodes from ALL podcasts
 // MUST be defined BEFORE /:slug.xml to prevent :slug matching "all"
-router.get('/all.xml', async (_req, res: Response) => {
+router.get('/all.xml', async (req, res: Response) => {
   try {
     // Fetch all podcasts with their episodes AND user/owner info
     const podcasts = await prisma.podcast.findMany({
@@ -113,7 +143,7 @@ router.get('/all.xml', async (_req, res: Response) => {
       )
       .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
 
-    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const baseUrl = getBackendUrl(req);
 
     // Format timestamp for RSS (RFC 2822)
     const formatRFC2822 = (date: Date) => {
@@ -125,6 +155,11 @@ router.get('/all.xml', async (_req, res: Response) => {
       .map(
         (episode) => {
           const duration = episode.duration ? Math.floor(episode.duration) : 0;
+          // Ensure cover URL is absolute and falls back to default
+          let coverHref = episode.coverUrl;
+          if (!coverHref || (!coverHref.startsWith('http://') && !coverHref.startsWith('https://'))) {
+            coverHref = `${baseUrl}/default-cover.svg`;
+          }
           return `
     <item>
       <title>${escapeXml(episode.title)} - ${escapeXml(episode.podcastTitle)}</title>
@@ -136,7 +171,7 @@ router.get('/all.xml', async (_req, res: Response) => {
       <itunes:author>${escapeXml(episode.podcastTitle)}</itunes:author>
       ${duration > 0 ? `<itunes:duration>${duration}</itunes:duration>` : ''}
       <itunes:explicit>no</itunes:explicit>
-      <itunes:image href="${escapeXml(episode.coverUrl || `${baseUrl}/default-cover.svg`)}" />
+      <itunes:image href="${escapeXml(coverHref)}" />
     </item>`;
         }
       )
@@ -197,8 +232,8 @@ router.get('/:slug.xml', async (req, res: Response) => {
       return res.status(404).send('Podcast not found');
     }
 
-    // Generate RSS feed
-    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    // Generate RSS feed using backend URL from request
+    const baseUrl = getBackendUrl(req);
     const rssFeed = generateRssFeed(podcast, podcast.episodes, baseUrl);
 
     // Set proper headers for RSS
