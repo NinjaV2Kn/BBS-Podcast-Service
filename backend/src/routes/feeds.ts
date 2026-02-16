@@ -19,8 +19,8 @@ function generateRssFeed(podcast: any, episodes: any[], baseUrl: string): string
     return new Date(date).toUTCString();
   };
 
-  // Get owner email - fall back to default school email
-  const ownerEmail = podcast.user?.email || 'podcast@bbs2-wolfsburg.de';
+  // Get owner email - fall back to test email
+  const ownerEmail = podcast.user?.email || 'testrsspodcast@gmail.com';
   const ownerName = podcast.user?.name || 'BBS 2 Podcast Team';
   const coverUrl = podcast.coverUrl || `${baseUrl}/default-cover.svg`;
 
@@ -106,7 +106,7 @@ router.get('/all.xml', async (_req, res: Response) => {
           ...episode,
           podcastTitle: podcast.title,
           podcastSlug: podcast.slug,
-          ownerEmail: podcast.user?.email || 'podcast@bbs2-wolfsburg.de',
+          ownerEmail: podcast.user?.email || 'testrsspodcast@gmail.com',
           ownerName: podcast.user?.name || 'BBS 2 Podcast Team',
           coverUrl: podcast.coverUrl,
         }))
@@ -160,7 +160,7 @@ router.get('/all.xml', async (_req, res: Response) => {
     <itunes:image href="${escapeXml(defaultCoverUrl)}" />
     <itunes:owner>
       <itunes:name>BBS 2 Podcast Team</itunes:name>
-      <itunes:email>podcast@bbs2-wolfsburg.de</itunes:email>
+      <itunes:email>testrsspodcast@gmail.com</itunes:email>
     </itunes:owner>
     <itunes:category text="Bildung" />
     <itunes:explicit>no</itunes:explicit>
