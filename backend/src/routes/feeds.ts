@@ -103,18 +103,6 @@ function escapeXml(unsafe: string): string {
     .replace(/['"]/g, (c) => (c === '"' ? '&quot;' : '&#39;'));
 }
 
-// Helper to get backend URL from request or environment
-function getBackendUrl(req: any): string {
-  // Try to get from env first (for consistency)
-  if (process.env.BACKEND_URL) {
-    return process.env.BACKEND_URL;
-  }
-  // Fall back to request headers (for auto-detection)
-  const protocol = req.get('x-forwarded-proto') || 'http';
-  const host = req.get('x-forwarded-host') || req.get('host') || 'localhost:8080';
-  return `${protocol}://${host}`;
-}
-
 // GET /feeds/all.xml - Global RSS feed with ALL episodes from ALL podcasts
 // MUST be defined BEFORE /:slug.xml to prevent :slug matching "all"
 router.get('/all.xml', async (req, res: Response) => {
