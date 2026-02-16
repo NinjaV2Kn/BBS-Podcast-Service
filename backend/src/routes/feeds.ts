@@ -66,40 +66,8 @@ function escapeXml(unsafe: string): string {
     .replace(/['"]/g, (c) => (c === '"' ? '&quot;' : '&#39;'));
 }
 
-// GET /feeds/:slug.xml - Generate RSS feed
-router.get('/:slug.xml', async (req, res: Response) => {
-  try {
-    const { slug } = req.params;
-
-    // Find podcast by slug
-    const podcast = await prisma.podcast.findUnique({
-      where: { slug },
-      include: {
-        episodes: {
-          orderBy: { publishedAt: 'desc' },
-        },
-      },
-    });
-
-    if (!podcast) {
-      return res.status(404).send('Podcast not found');
-    }
-
-    // Generate RSS feed
-    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    const rssFeed = generateRssFeed(podcast, podcast.episodes, baseUrl);
-
-    // Set proper headers for RSS
-    res.type('application/rss+xml; charset=utf-8');
-    res.set('Content-Disposition', `inline; filename="${slug}.xml"`);
-    return res.send(rssFeed);
-  } catch (error) {
-    console.error('RSS feed generation error:', error);
-    return res.status(500).send('Failed to generate RSS feed');
-  }
-});
-
 // GET /feeds/all.xml - Global RSS feed with ALL episodes from ALL podcasts
+// MUST be defined BEFORE /:slug.xml to prevent :slug matching "all"
 router.get('/all.xml', async (_req, res: Response) => {
   try {
     // Fetch all podcasts with their episodes
@@ -163,6 +131,39 @@ router.get('/all.xml', async (_req, res: Response) => {
     return res.send(rss);
   } catch (error) {
     console.error('Global RSS feed generation error:', error);
+    return res.status(500).send('Failed to generate RSS feed');
+  }
+});
+
+// GET /feeds/:slug.xml - Generate RSS feed
+router.get('/:slug.xml', async (req, res: Response) => {
+  try {
+    const { slug } = req.params;
+
+    // Find podcast by slug
+    const podcast = await prisma.podcast.findUnique({
+      where: { slug },
+      include: {
+        episodes: {
+          orderBy: { publishedAt: 'desc' },
+        },
+      },
+    });
+
+    if (!podcast) {
+      return res.status(404).send('Podcast not found');
+    }
+
+    // Generate RSS feed
+    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const rssFeed = generateRssFeed(podcast, podcast.episodes, baseUrl);
+
+    // Set proper headers for RSS
+    res.type('application/rss+xml; charset=utf-8');
+    res.set('Content-Disposition', `inline; filename="${slug}.xml"`);
+    return res.send(rssFeed);
+  } catch (error) {
+    console.error('RSS feed generation error:', error);
     return res.status(500).send('Failed to generate RSS feed');
   }
 });
